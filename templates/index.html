@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucene Analyzer Playground</title>
+    <style>
+        body { font-family: Arial, Helvetica, sans-serif; margin: 2rem; }
+        textarea { width: 100%; height: 150px; padding: 0.5rem; }
+        button { padding: 0.6rem 1.2rem; margin-top: 0.5rem; cursor: pointer; }
+        #results { margin-top: 1.5rem; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; }
+    </style>
+</head>
+<body>
+    <h1>Lucene Analyzer Playground</h1>
+    <p>Enter text and compare tokenization across different analyzers.</p>
+
+    <textarea id="inputText" placeholder="Type or paste text here..."></textarea>
+    <br>
+    <button id="analyzeBtn">Analyze</button>
+
+    <div id="results"></div>
+
+<script>
+const btn = document.getElementById('analyzeBtn');
+const input = document.getElementById('inputText');
+const resultsDiv = document.getElementById('results');
+
+btn.addEventListener('click', () => {
+    const text = input.value;
+    if (!text.trim()) {
+        alert('Please enter some text.');
+        return;
+    }
+
+    fetch('/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+    })
+    .then(res => res.json())
+    .then(data => {
+        let html = '<h2>Tokenization Results</h2>';
+        html += '<table><thead><tr><th>Analyzer</th><th>Tokens</th></tr></thead><tbody>';
+        for (const [analyzer, tokens] of Object.entries(data)) {
+            html += `<tr><td>${analyzer}</td><td>${tokens.join(', ')}</td></tr>`;
+        }
+        html += '</tbody></table>';
+        resultsDiv.innerHTML = html;
+    })
+    .catch(err => {
+        resultsDiv.innerHTML = `<p style="color:red;">Error: ${err}</p>`;
+    });
+});
+</script>
+</body>
+</html> 

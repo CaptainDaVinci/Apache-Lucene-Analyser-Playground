@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lucene Analyzer Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 720px;
+            margin: 40px auto;
+            padding: 0 16px;
+        }
+        textarea {
+            width: 100%;
+            height: 120px;
+        }
+        select, button {
+            padding: 6px 12px;
+            margin-top: 8px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            display: inline-block;
+            background: #f0f0f0;
+            margin: 4px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<h1>Lucene Analyzer Demo</h1>
+<p>Enter some text, choose an analyzer, and view the generated tokens.</p>
+<form id="analyzeForm">
+    <label for="text">Text:</label><br>
+    <textarea id="text" name="text" required></textarea><br>
+
+    <label for="analyzer">Analyzer:</label>
+    <select id="analyzer">
+        <option value="standard">Standard</option>
+        <option value="english">English</option>
+        <option value="simple">Simple</option>
+    </select>
+    <button type="submit">Analyze</button>
+</form>
+
+<h2>Tokens</h2>
+<ul id="tokens"></ul>
+
+<script>
+    document.getElementById('analyzeForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const text = document.getElementById('text').value;
+        const analyzer = document.getElementById('analyzer').value;
+
+        if (!text.trim()) {
+            alert('Please enter some text');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/analyze?analyzer=${encodeURIComponent(analyzer)}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/plain'
+                },
+                body: text
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText);
+            }
+
+            const data = await response.json();
+            const tokensUl = document.getElementById('tokens');
+            tokensUl.innerHTML = '';
+            data.tokens.forEach(token => {
+                const li = document.createElement('li');
+                li.textContent = token;
+                tokensUl.appendChild(li);
+            });
+        } catch (err) {
+            alert('Error: ' + err.message);
+            console.error(err);
+        }
+    });
+</script>
+</body>
+</html> 
