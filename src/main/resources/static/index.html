@@ -228,6 +228,7 @@
             flex-wrap: wrap;
             gap: 0.5rem;
             list-style: none;
+            align-content: flex-start; /* Align content to top */
         }
 
         .token {
@@ -239,6 +240,10 @@
             font-size: 0.9rem;
             color: var(--text-primary);
             transition: transform 0.1s ease, box-shadow 0.1s ease;
+            flex-shrink: 0; /* Prevent tokens from shrinking */
+            height: fit-content; /* Only take needed height */
+            line-height: 1.2; /* Tighter line height */
+            white-space: nowrap; /* Prevent text wrapping within tokens */
         }
 
         .token:hover {
